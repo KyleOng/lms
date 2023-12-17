@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Chapter, Course } from "@prisma/client";
-import { PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import ChaptersList from "./ChaptersList";
 
 const formSchema = z.object({
   title: z.string().min(1),
@@ -57,8 +58,32 @@ const ChaptersForm = ({ initialData, courseId }: Props) => {
     }
   };
 
+  const onEdit = async (id: string) => {
+    router.push(`/teacher/courses/${courseId}/chapters/${id}`)
+  };
+
+  const onReorder = async (updateData: { id: string; position: number }[]) => {
+    try {
+      setIsUpdating(true);
+      await axios.put(`/api/courses/${courseId}/chapters/reorder`, {
+        list: updateData,
+      });
+      toast.success("Chapters reordered");
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
+    <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
+      {isUpdating && (
+        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center">
+          <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
+        </div>
+      )}
       <div className="font-medium flex items-center justify-between">
         Course chapters
         <Button variant="ghost" onClick={toggleIsCreating}>
@@ -108,7 +133,11 @@ const ChaptersForm = ({ initialData, courseId }: Props) => {
           )}
         >
           {!initialData.chapters.length && "No chapters"}
-          {/* Add a list of chapters */}
+          <ChaptersList
+            onEdit={onEdit}
+            onReorder={onReorder}
+            items={initialData.chapters || []}
+          />
         </div>
       )}
       {!isCreating && (
