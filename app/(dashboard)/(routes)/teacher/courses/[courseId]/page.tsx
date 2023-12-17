@@ -41,7 +41,7 @@ const CourseIdPage = async ({ params }: Props) => {
       },
       chapters: {
         orderBy: {
-          position: "desc",
+          position: "asc",
         },
       },
     },
