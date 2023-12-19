@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import ChapterAccessForm from "./_components/ChapterAccessForm";
 import ChapterDescriptionForm from "./_components/ChapterDescriptionForm";
 import ChapterTitleForm from "./_components/ChapterTitleForm";
+import ChapterVideoForm from "./_components/ChapterVideoForm";
 
 type Props = {
   params: {
@@ -80,6 +81,17 @@ const ChapterIdPage = async ({ params }: Props) => {
             <h2 className="text-xl">Access Settings</h2>
           </div>
           <ChapterAccessForm
+            initialData={chapter}
+            courseId={params.courseId}
+            chapterId={params.chapterId}
+          />
+        </div>
+        <div>
+          <div className="flex items-center gap-x-2">
+            <IconBadge icon={Video} />
+            <h2 className="text-xl">Add a video</h2>
+          </div>
+          <ChapterVideoForm
             initialData={chapter}
             courseId={params.courseId}
             chapterId={params.chapterId}
