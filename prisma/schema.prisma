@@ -94,6 +94,7 @@ model UserProgress {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([chapterId])
   @@unique([userId, chapterId])
 }
 
@@ -106,6 +107,9 @@ model Purchase {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@unique([userId, courseId])
 }
 
 model StripeCustomer {
